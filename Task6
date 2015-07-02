@@ -1,0 +1,111 @@
+import java.util.*;
+
+/**
+ * Class MyHashMap based implementation of the map and
+ * extension of the HashMap.
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
+ */
+
+class MyHashMap<K, V> extends HashMap implements Map{
+    Map.Entry<K, V>[] myHashMap;
+
+    /**
+     * The count of modification of map
+     */
+
+    int modCount = 0;
+
+    /**
+     * This function computes hashCode for elements of map
+     * and return this value.
+     */
+
+    public int hash(int result){
+        result = 17;
+        for (Map.Entry<K, V> e : myHashMap)
+            result = 37 * result + e.hashCode();
+        return result;
+    }
+
+    /**
+     * This function determines position of element.
+     */
+
+    static int indexFor(int result, int length)
+    {
+        return result & (length - 1);
+    }
+
+    /**
+     * This function designed for changing size HashMap in the case of adding the element.
+     *
+     */
+
+    void addElement(int hash, K key, V value, int i){
+        int threshold = Integer.MAX_VALUE;
+        Entry<K,V> e = myHashMap[i];
+        int size = myHashMap.length + 1;
+        if (size >= threshold)
+            size = (2 * myHashMap.length);
+    }
+
+    /**
+     * This function designed for insert a new element.
+     * Insert element carried by checking another item inserted in place.
+     */
+
+    public V putElement(K key, V value) {
+        int hash = hash(key.hashCode());
+        int i = indexFor(hash, myHashMap.length);
+        for (Map.Entry<K,V> e = myHashMap[i]; e != null; i++) {
+            if (e.hashCode() != hash && e.getKey() != key ) {
+                addElement(hash, key, value, i);
+                return value;
+            }
+        }
+        modCount++;
+        return null;
+    }
+
+    /**
+     * Delete an item by overwriting it in another array and reduce the size of the map
+     * erases the number of elements .
+     */
+
+    public K removeElement(K key) {
+        Entry<K, V>[] temp = null;
+        int size = myHashMap.length;
+        int hash = hash(key.hashCode());
+        int i = indexFor(hash, myHashMap.length);
+        Entry<K, V> prev = myHashMap[i];
+        Entry<K, V> e = prev;
+        Entry<K, V> next = myHashMap[i];//
+        if(myHashMap.length == 0)
+            return null;
+        for(e = myHashMap[i]; e != null; i++){
+            if(e.hashCode() == hash && e.getKey() == key){
+                temp[i] = e;
+                prev = next;
+            }
+            modCount++;
+            size--;
+        }
+        return e.getKey();
+    }
+}
+
+public class Task6 {
+    public static void main(String [] args){
+        MyHashMap<String, Integer> myHashMap = new MyHashMap<>();
+        myHashMap.putElement("Mercury", new Integer(1));
+        myHashMap.putElement("Venus", new Integer(2));
+        myHashMap.putElement("Earth", new Integer(3));
+        myHashMap.putElement("Mars", new Integer(4));
+        System.out.println("This is myHashMap " + myHashMap + "\n");
+        myHashMap.removeElement("Earth");
+        System.out.println("myHashMap after remove" + myHashMap + "\n");
+    }
+}
+
+
